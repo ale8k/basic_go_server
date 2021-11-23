@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  app-air:
+    image: cosmtrek/air
+    working_dir: "/usr/src/app"
+    ports:
+      - 8001:8000
+    environment:
+      BOB: "burgers"
+    volumes:
+      - "./:/usr/src/app"
