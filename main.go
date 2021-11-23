@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -29,8 +30,8 @@ func main() {
 
 	fmt.Println("Server starting on port 8000...")
 	// Does it default to hostname of container?
-	fmt.Errorf(
-		"Server failed to start: ",
+	log.Fatalf(
+		"Server failed to start: %v",
 		http.ListenAndServe(":8000", nil),
 	)
 }
