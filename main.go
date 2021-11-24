@@ -5,6 +5,11 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Shopify/sarama"
+
+	"github.com/ale8k/basic_go_server/config"
+
+	"github.com/ale8k/basic_go_server/routes"
 	"github.com/gorilla/mux"
 )
 
@@ -12,19 +17,23 @@ func main() {
 
 	router := mux.NewRouter()
 
-	router.
-		Path("/testing").
-		Methods("GET").
-		HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-			rw.Write([]byte("test"))
-		})
+	routes.RegisterPushToKafkaRoutes(router)
+	producer, _ := sarama.NewSyncProducer([]string{config.KafkaBrokerAddrs}, sarama.NewConfig())
 
-	router.HandleFunc("/hi/{pathvar:[a-z]}/dude", func(rw http.ResponseWriter, r *http.Request) {
-		pathVarMap := mux.Vars(r)
+	defer producer.Close()
+	// router.
+	// 	Path("/testing").
+	// 	Methods("GET").
+	// 	HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+	// 		rw.Write([]byte("test"))
+	// 	})
 
-		fmt.Println("yo", pathVarMap["pathvar"], r.URL.Query().Get("yolo"))
-		rw.Write([]byte("hi"))
-	})
+	// router.HandleFunc("/hi/{pathvar:[a-z]}/dude", func(rw http.ResponseWriter, r *http.Request) {
+	// 	pathVarMap := mux.Vars(r)
+
+	// 	fmt.Println("yo", pathVarMap["pathvar"], r.URL.Query().Get("yolo"))
+	// 	rw.Write([]byte("hi"))
+	// })
 
 	http.Handle("/", router)
 
