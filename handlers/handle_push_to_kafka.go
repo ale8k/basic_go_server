@@ -21,6 +21,8 @@ func PushToKafka(rw http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Fprintf(rw, "something went wrong... could not read body")
+		// If we opened routines here
+		// we would immediately kill the context via cancel
 		return
 	} else {
 		fmt.Printf("Body read safely: %s \n", stringBody)
@@ -35,7 +37,6 @@ func PushToKafka(rw http.ResponseWriter, r *http.Request) {
 		fmt.Printf("error: %v \n", err)
 	} else {
 		fmt.Fprintf(rw, "message sent, partition id: %v offset: %v \n", partitionId, offset)
-		return
 	}
 
 }

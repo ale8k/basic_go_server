@@ -16,18 +16,10 @@ import (
 var SyncProducer1 sarama.SyncProducer
 
 func main() {
-
 	router := mux.NewRouter()
 	SyncProducer1 = services.GetNewSyncProducer()
 	handlers.SyncProducer1 = SyncProducer1
-	routes.RegisterPushToKafkaRoutes(router)
-
-	// partitionId, offset, err := producer.SendMessage(&sarama.ProducerMessage{
-	// 	Topic: "workpherels",
-	// 	Value: sarama.StringEncoder("we dflkjdsfklmdsflkjdsljkfdskjfjldfldslfjksdgood?"),
-	// })
-
-	// fmt.Printf("message sent, partition id: %v offset: %v \n", partitionId, offset)
+	routes.RegisterMessageQueue(router)
 
 	// router.
 	// 	Path("/testing").
