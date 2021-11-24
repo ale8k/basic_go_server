@@ -2,21 +2,40 @@ package handlers
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 
+	"github.com/Shopify/sarama"
 	"github.com/gorilla/mux"
 )
 
+var SyncProducer1 sarama.SyncProducer
+
 func PushToKafka(rw http.ResponseWriter, r *http.Request) {
-	rw.Write([]byte("pushing to kafka"))
+	defer r.Body.Close()
 
 	msgTopic := mux.Vars(r)["topicname"]
 
-	fmt.Printf("Topic msg sent to: %s \n", msgTopic)
+	body, err := io.ReadAll(r.Body)
+	stringBody := string(body)
 
-	// producer, _ := sarama.NewSyncProducer([]string{config.KafkaBrokerAddrs}, sarama.NewConfig())
-	// producer.SendMessage(&sarama.ProducerMessage{Topic: "yololo", Value: sarama.StringEncoder("hi")})
-	// producer, _ := sarama.NewAsyncProducer([]string{config.KafkaBrokerAddrs}, sarama.NewConfig())
-	// producer.Input() <- &sarama.ProducerMessage{Topic: "gololo", Value: sarama.StringEncoder("boop")}
+	if err != nil {
+		fmt.Fprintf(rw, "something went wrong... could not read body")
+		return
+	} else {
+		fmt.Printf("Body read safely: %s \n", stringBody)
+	}
+
+	partitionId, offset, err := SyncProducer1.SendMessage(&sarama.ProducerMessage{
+		Topic: msgTopic,
+		Value: sarama.StringEncoder(stringBody),
+	})
+
+	if err != nil {
+		fmt.Printf("error: %v \n", err)
+	} else {
+		fmt.Fprintf(rw, "message sent, partition id: %v offset: %v \n", partitionId, offset)
+		return
+	}
 
 }

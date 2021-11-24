@@ -7,34 +7,27 @@ import (
 
 	"github.com/Shopify/sarama"
 
-	"github.com/ale8k/basic_go_server/config"
+	"github.com/ale8k/basic_go_server/handlers"
 	"github.com/ale8k/basic_go_server/routes"
+	"github.com/ale8k/basic_go_server/services"
 	"github.com/gorilla/mux"
 )
+
+var SyncProducer1 sarama.SyncProducer
 
 func main() {
 
 	router := mux.NewRouter()
-
+	SyncProducer1 = services.GetNewSyncProducer()
+	handlers.SyncProducer1 = SyncProducer1
 	routes.RegisterPushToKafkaRoutes(router)
-	producer, err := sarama.NewSyncProducer([]string{"kafka:9092"}, config.AppSaramaConfig)
 
-	if err != nil {
-		panic(err)
-	}
+	// partitionId, offset, err := producer.SendMessage(&sarama.ProducerMessage{
+	// 	Topic: "workpherels",
+	// 	Value: sarama.StringEncoder("we dflkjdsfklmdsflkjdsljkfdskjfjldfldslfjksdgood?"),
+	// })
 
-	partitionId, offset, err := producer.SendMessage(&sarama.ProducerMessage{
-		Topic: "workpherels",
-		Value: sarama.StringEncoder("we dflkjdsfklmdsflkjdsljkfdskjfjldfldslfjksdgood?"),
-	})
-
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("message sent, partition id: %v offset: %v \n", partitionId, offset)
-
-	defer producer.Close()
+	// fmt.Printf("message sent, partition id: %v offset: %v \n", partitionId, offset)
 
 	// router.
 	// 	Path("/testing").
