@@ -8,7 +8,6 @@ import (
 	"github.com/Shopify/sarama"
 
 	"github.com/ale8k/basic_go_server/config"
-
 	"github.com/ale8k/basic_go_server/routes"
 	"github.com/gorilla/mux"
 )
@@ -18,9 +17,25 @@ func main() {
 	router := mux.NewRouter()
 
 	routes.RegisterPushToKafkaRoutes(router)
-	producer, _ := sarama.NewSyncProducer([]string{config.KafkaBrokerAddrs}, sarama.NewConfig())
+	producer, err := sarama.NewSyncProducer([]string{"kafka:9092"}, config.AppSaramaConfig)
+
+	if err != nil {
+		panic(err)
+	}
+
+	partitionId, offset, err := producer.SendMessage(&sarama.ProducerMessage{
+		Topic: "workpherels",
+		Value: sarama.StringEncoder("we dflkjdsfklmdsflkjdsljkfdskjfjldfldslfjksdgood?"),
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("message sent, partition id: %v offset: %v \n", partitionId, offset)
 
 	defer producer.Close()
+
 	// router.
 	// 	Path("/testing").
 	// 	Methods("GET").

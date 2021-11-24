@@ -11,6 +11,7 @@ var KafkaBrokerAddrs string
 
 func setSaramaConfig() {
 	AppSaramaConfig = sarama.NewConfig()
+	AppSaramaConfig.Producer.Return.Successes = true
 }
 
 func setKafkaBrokerAddrs() {
