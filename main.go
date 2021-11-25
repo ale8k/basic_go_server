@@ -14,11 +14,14 @@ import (
 )
 
 var SyncProducer1 sarama.SyncProducer
+var Consumer1 sarama.Consumer
 
 func main() {
 	router := mux.NewRouter()
 	SyncProducer1 = services.GetNewSyncProducer()
+	Consumer1 = services.GetNewConsumer()
 	handlers.SyncProducer1 = SyncProducer1
+	handlers.Consumer1 = Consumer1
 	routes.RegisterMessageQueue(router)
 
 	// router.
